@@ -6,24 +6,27 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
 
-var app = express();
 
-// view engine setup
+var app = express(); //se crea aplicación
+
+// view engine setup, instala generador de vistas
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+
+//instala los middlewares a utilizar en la aplicación
 // uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// instalar enrutadores y asociar rutas a su manejadores o gestores
 app.use('/', routes);
-app.use('/users', users);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -57,4 +60,5 @@ app.use(function(err, req, res, next) {
 });
 
 
+//exportar app para comando de arranque
 module.exports = app;
