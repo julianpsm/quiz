@@ -25,14 +25,14 @@ exports.index = function( req, res){
 	
 	models.Quiz.findAll({where: ["upper(pregunta) like upper(?)", search], order: 'pregunta ASC'}).then(function(quizes) {
 		res.render('quizes/index', {quizes: quizes, errors: []});
-	}).catch(function(error) {next(error);});
+	}).catch(function(error) {next(error)});
 };
 
 
 //GET /quizes/:id
 exports.show = function (req,res) {
 	models.Quiz.find(req.params.quizId).then(function(quiz) {
-		res.render('quizes/show', {quiz: req.quiz, errors: [] });	
+		res.render('quizes/show', {quiz: req.quiz, errors: []});	
 	});
 };
 
@@ -42,7 +42,9 @@ exports.answer = function (req,res) {
 	if (req.query.respuesta === req.quiz.respuesta){
 		resultado='Correcto';
 	}
-	res.render('quizes/answer', {quiz: req.quiz, respuesta: resultado, errors: []});	
+	res.render('quizes/answer', {quiz: req.quiz, respuesta: resultado, errors: []
+	}
+);	
 };	
 
 //GET /quizes/new
@@ -63,11 +65,37 @@ exports.create= function(req, res){
 		function(err){
 			if (err) {
 				res.render('quizes/new', {quiz: quiz, errors: err.errors});
-			}else{
+			} else {
 				//guarda en la base de datos los campos pregunta y respuesta
 				quiz.save({fields: ["pregunta", "respuesta"]}).then(function(){
 				res.redirect('/quizes')}) //redirección HTTP (URL relativo) de la lista de preguntas
 			}	
+		}
+	);
+};
+
+//GET /quizes/:id/edit
+exports.edit=function(req, res){
+	var quiz= req.quiz; //autoload de instancia de quiz
+	res.render('quizes/edit', {quiz:quiz, errors: []});
+};
+
+//PUT /quizes/:id
+exports.update = function(req, res) {
+	req.quiz.pregunta = req.body.quiz.pregunta;
+	req.quiz.respuesta= req.body.quiz.respuesta;
+
+	req.quiz
+	.validate()
+	.then(
+		function(err){
+			if (err) {
+				res.render('quizes/edit', {quiz: req.quiz, errors: err.errors});
+			} else {
+				req.quiz //save: guardar campos pregunta y respuesta en base de datos
+				.save( {fields: ["pregunta", "respuesta"]})
+				.then( function(){ res.redirect('/quizes');});
+			}
 		}
 	);
 };
