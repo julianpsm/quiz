@@ -75,7 +75,7 @@ exports.create= function(req, res){
 				res.render('quizes/new', {quiz: quiz, errors: err.errors});
 			} else {
 				//guarda en la base de datos los campos pregunta y respuesta
-				quiz.save({fields: ["pregunta", "respuesta"]}).then(function(){
+				quiz.save({fields: ["pregunta", "respuesta", "tema"]}).then(function(){
 				res.redirect('/quizes')}) //redirección HTTP (URL relativo) de la lista de preguntas
 			}	
 		}
@@ -92,6 +92,7 @@ exports.edit=function(req, res){
 exports.update = function(req, res) {
 	req.quiz.pregunta = req.body.quiz.pregunta;
 	req.quiz.respuesta= req.body.quiz.respuesta;
+	req.quiz.tema= req.body.quiz.tema;
 
 	req.quiz
 	.validate()
@@ -101,7 +102,7 @@ exports.update = function(req, res) {
 				res.render('quizes/edit', {quiz: req.quiz, errors: err.errors});
 			} else {
 				req.quiz //save: guardar campos pregunta y respuesta en base de datos
-				.save( {fields: ["pregunta", "respuesta"]})
+				.save( {fields: ["pregunta", "respuesta", "tema"]})
 				.then( function(){ res.redirect('/quizes');});
 			}
 		}
