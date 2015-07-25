@@ -31,6 +31,27 @@ app.use(session()); //Instalamos el MW session
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+//solución al P2P del módulo 9
+app.use(function(req, res, next){
+	var inactivo= 30000;
+	//Se comprueba si existe sesión 
+	if (req.session.user) {
+		// si existe hay que comprobar si ha caducado por tiempo de inactividad
+		if (Date.now()- req.session.timeSession > inactivo) {
+			// si se cumple la condición,se ha sobrepasado tiempo de inactividad 
+			//hace autologout de forma automática
+			delete req.session.user;
+			req.session.timeSession = Date.now();
+		} else {
+			//no se ha soprepasado tiempo de inactividad, ha habido interacción con el sistema
+			// y es necesario reinicializar la variable de toma de tiempos de la sesión
+			req.session.timeSession = Date.now();
+		}
+	}
+	// si no hay una sesión en marcha no se hace nada
+	next();
+});
+
 //Helpers dinámicos:
 app.use(function(req, res, next){
     //guardar path en session.redir para después de login
